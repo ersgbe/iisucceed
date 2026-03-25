@@ -1,0 +1,1598 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Никита | Production & Reels Editor</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #000000;
+            --accent: #ffffff;
+            --secondary: #111111;
+            --card-bg: rgba(10, 10, 10, 0.6);
+            --text-muted: #a1a1a1;
+            --border: rgba(255, 255, 255, 0.1);
+            --radius: 16px;
+            --blue-glow: rgba(0, 87, 255, 0.35);
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg);
+            color: var(--accent);
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Background Glows */
+        body::before, body::after {
+            content: "";
+            position: fixed;
+            width: 600px;
+            height: 600px;
+            border-radius: 50%;
+            background: radial-gradient(circle, var(--blue-glow) 0%, rgba(0, 87, 255, 0) 70%);
+            filter: blur(80px);
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        body::before {
+            top: -200px;
+            right: -100px;
+        }
+
+        body::after {
+            bottom: -200px;
+            left: -100px;
+        }
+
+        .glow-center {
+            position: absolute;
+            top: 40%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 800px;
+            height: 800px;
+            background: radial-gradient(circle, rgba(0, 87, 255, 0.2) 0%, rgba(0, 87, 255, 0) 60%);
+            z-index: -1;
+            pointer-events: none;
+        }        html {
+            scroll-behavior: smooth;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* Typography */
+        h1, h2, h3 {
+            font-weight: 700;
+            letter-spacing: -0.03em;
+        }
+
+        p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--accent);
+            color: var(--bg);
+            padding: 14px 28px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.2s ease;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+
+        /* Hero Section */
+        .hero {
+            padding: 160px 0 100px;
+            text-align: center;
+        }
+
+        .badge {
+            background: var(--secondary);
+            border: 1px solid var(--border);
+            padding: 6px 16px;
+            border-radius: 100px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--accent);
+            display: inline-block;
+            margin-bottom: 24px;
+        }
+
+        .hero h1 {
+            font-size: clamp(3.5rem, 12vw, 6.5rem);
+            line-height: 1;
+            margin-bottom: 32px;
+            background: linear-gradient(180deg, #FFFFFF 0%, rgba(255, 255, 255, 0.7) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero p {
+            max-width: 600px;
+            margin: 0 auto 40px;
+            font-size: 1.25rem;
+        }
+
+        .hero-btns {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            margin-top: 40px;
+        }
+
+        .btn-secondary {
+            background: #0057ff;
+            color: #ffffff;
+            border: 1px solid #0057ff;
+        }
+
+        .btn-secondary:hover {
+            background: #0046cc;
+            border-color: #0046cc;
+            transform: translateY(-2px);
+        }        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1px;
+            background: var(--border);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            overflow: hidden;
+            margin-bottom: 100px;
+        }
+
+        .stat-card {
+            background: var(--bg);
+            padding: 48px 24px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 3.5rem;
+            font-weight: 800;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            color: var(--text-muted);
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.1em;
+            font-weight: 600;
+        }
+
+        /* Portfolio */
+        .section-header {
+            margin-bottom: 48px;
+            text-align: center;
+        }
+
+        .section-header h2 {
+            font-size: 3rem;
+            margin-bottom: 16px;
+        }
+
+        .portfolio-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            margin-bottom: 120px;
+        }
+
+        /* Portfolio Slider */
+        .portfolio-container {
+            position: relative;
+            margin-bottom: 120px;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .portfolio-slider {
+            display: flex;
+            gap: 40px;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            padding: 40px 0;
+            scrollbar-width: none;
+            scroll-behavior: smooth;
+            align-items: center;
+        }
+
+        .portfolio-slider::-webkit-scrollbar {
+            display: none;
+        }
+
+        .portfolio-card {
+            flex: 0 0 calc(33.333% - 27px);
+            scroll-snap-align: center;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            aspect-ratio: 9/16;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(10px);
+            transform: scale(0.8);
+            opacity: 0.5;
+            filter: brightness(0.5);
+        }
+
+        /* Active state simulation via Intersection Observer or just CSS for simple snap */
+        /* Since we want 3 large videos, we'll use a simpler approach with JS to toggle classes */
+        .portfolio-card.is-active {
+            transform: scale(1);
+            opacity: 1;
+            filter: brightness(1);
+            border-color: #0057ff;
+            box-shadow: 0 20px 40px rgba(0, 87, 255, 0.15);
+        }
+
+        .portfolio-card video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: var(--radius);
+            display: block;
+        }
+
+        .play-button {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 64px;
+            height: 64px;
+            background: rgba(0, 87, 255, 0.8);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 2;
+            transition: all 0.3s ease;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(4px);
+        }
+
+        .play-button svg {
+            width: 24px;
+            height: 24px;
+            fill: white;
+            margin-left: 4px;
+        }
+
+        .portfolio-card:hover .play-button {
+            transform: translate(-50%, -50%) scale(1.1);
+            background: #0057ff;
+        }
+
+        .portfolio-card.playing .play-button {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .portfolio-card.horizontal {
+            aspect-ratio: 16/9;
+            flex: 0 0 calc(50% - 20px);
+        }
+
+        @media (max-width: 768px) {
+            .portfolio-card.horizontal {
+                flex: 0 0 calc(100% - 20px);
+            }
+        }
+
+        .portfolio-card .placeholder {            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            text-align: center;
+            width: 80%;
+            font-weight: 500;
+        }
+
+        .portfolio-nav {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            margin-top: 32px;
+        }
+
+        /* Features / Why Me */        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 24px;
+            margin-bottom: 120px;
+        }
+
+        .feature-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            padding: 40px;
+            border-radius: var(--radius);
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .feature-card:hover {
+            border-color: rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .feature-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 16px;
+            color: #ffffff;
+        }
+
+        /* Audience */
+        .audience-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+            margin-bottom: 120px;
+        }
+
+        .audience-card {
+            padding: 32px;
+            border-radius: var(--radius);
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .audience-card:hover {
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .audience-card h3 {
+            margin-bottom: 12px;
+            font-size: 1.25rem;
+        }
+
+        /* Testimonials */
+        .testimonials-container {
+            position: relative;
+            margin-bottom: 120px;
+        }
+
+        .testimonials-slider {
+            display: flex;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            gap: 24px;
+            padding-bottom: 20px;
+            scrollbar-width: none; /* Firefox */
+            scroll-behavior: smooth;
+        }
+
+        .testimonials-slider::-webkit-scrollbar {
+            display: none; /* Chrome/Safari */
+        }
+
+        .testimonial-item {
+            flex: 0 0 100%;
+            scroll-snap-align: center;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            padding: 60px 40px;
+            border-radius: var(--radius);
+            text-align: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .testimonial-text {
+            font-size: 1.75rem;
+            font-weight: 500;
+            margin-bottom: 32px;
+            color: #ffffff;
+            line-height: 1.4;
+        }
+
+        .testimonial-author {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+        }
+
+        .slider-nav {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        .nav-btn {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            color: #ffffff;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .nav-btn:hover {
+            border-color: #0057ff;
+            color: #0057ff;
+        }
+
+        .testimonials-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+        }
+        .more-reviews {
+            color: #0057ff;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: opacity 0.2s;
+        }
+
+        .more-reviews:hover {
+            opacity: 0.8;
+        }
+
+        /* CTA Section */        .cta-section {
+            background: #ffffff;
+            color: #000000;
+            padding: 100px 40px;
+            border-radius: 32px;
+            text-align: center;
+            margin-bottom: 80px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-section h2 {
+            font-size: clamp(2.5rem, 8vw, 4.5rem);
+            margin-bottom: 24px;
+            line-height: 1.1;
+        }
+
+        .cta-section p {
+            color: rgba(0, 0, 0, 0.6);
+            margin-bottom: 40px;
+        }
+
+        .cta-section .btn {
+            background: #000000;
+            color: #ffffff;
+            padding: 18px 40px;
+            font-size: 1.1rem;
+        }
+
+        .cta-section .btn:hover {
+            background: #1a1a1a;
+        }
+
+        footer {
+            padding: 60px 0;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+        /* ===== MOBILE RESPONSIVE ===== */
+        @media (max-width: 768px) {
+
+            /* Container */
+            .container {
+                padding: 0 20px;
+                width: 100%;
+                box-sizing: border-box;
+                overflow-x: hidden;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+
+            /* Hero */
+            .hero {
+                padding: 80px 0 48px;
+                text-align: center;
+                width: 100%;
+            }
+
+            .badge {
+                font-size: 0.78rem;
+                padding: 5px 14px;
+                margin-bottom: 20px;
+            }
+
+            .hero h1 {
+                font-size: clamp(2.6rem, 11vw, 3.8rem);
+                margin-bottom: 20px;
+                line-height: 1.02;
+                width: 100%;
+            }
+
+            .hero p {
+                font-size: 0.975rem;
+                line-height: 1.6;
+                padding: 0;
+                margin-bottom: 32px;
+                width: 100%;
+            }
+
+            .hero-btns {
+                flex-direction: column;
+                align-items: center;
+                gap: 12px;
+                margin-top: 32px;
+                padding: 0;
+                width: 100%;
+            }
+
+            .hero-btns .btn {
+                width: 100%;
+                max-width: 100%;
+                padding: 15px 24px;
+                font-size: 0.975rem;
+                border-radius: 14px;
+            }
+
+            /* Stats Grid — 1 column, centered */
+            .stats-grid {
+                grid-template-columns: 1fr;
+                margin: 0 0 64px;
+                border-radius: 20px;
+                width: 100%;
+                box-sizing: border-box;
+            }
+
+            .stat-card {
+                padding: 36px 20px;
+                text-align: center;
+                width: 100%;
+                box-sizing: border-box;
+            }
+
+            .stat-value {
+                font-size: 2.8rem;
+            }
+
+            .stat-label {
+                font-size: 0.7rem;
+                letter-spacing: 0.12em;
+            }
+
+            /* Section headers */
+            .section-header {
+                margin-bottom: 32px;
+                text-align: center;
+                padding: 0;
+                width: 100%;
+            }
+
+            .section-header h2 {
+                font-size: clamp(1.7rem, 7vw, 2.2rem);
+                margin-bottom: 12px;
+                width: 100%;
+            }
+
+            .section-header p {
+                font-size: 0.925rem;
+                padding: 0;
+                width: 100%;
+            }
+
+            /* Portfolio sliders */
+            .portfolio-container {
+                margin-bottom: 64px;
+                margin-left: -20px;
+                margin-right: -20px;
+                width: calc(100% + 40px);
+            }
+
+            .portfolio-slider {
+                gap: 14px;
+                padding: 24px 20px;
+            }
+
+            .portfolio-card {
+                flex: 0 0 78%;
+                transform: scale(0.92);
+                opacity: 0.55;
+                filter: brightness(0.55);
+                border-radius: 14px;
+            }
+
+            .portfolio-card.is-active {
+                transform: scale(1);
+                opacity: 1;
+                filter: brightness(1);
+            }
+
+            .portfolio-card.horizontal {
+                flex: 0 0 88%;
+                border-radius: 14px;
+            }
+
+            .portfolio-nav {
+                margin-top: 20px;
+                justify-content: center;
+                gap: 12px;
+                padding: 0 20px;
+                width: 100%;
+                box-sizing: border-box;
+            }
+
+            .nav-btn {
+                width: 44px;
+                height: 44px;
+            }
+
+            /* Features grid — 1 col */
+            .features-grid {
+                grid-template-columns: 1fr;
+                gap: 16px;
+                margin: 0 0 64px;
+                padding: 0;
+                width: 100%;
+                box-sizing: border-box;
+            }
+
+            .feature-card {
+                padding: 28px 24px;
+                border-radius: 16px;
+                text-align: center;
+                margin: 0;
+                width: 100%;
+                box-sizing: border-box;
+            }
+
+            .feature-card h3 {
+                font-size: 1.3rem;
+                margin-bottom: 12px;
+            }
+
+            .feature-card p {
+                font-size: 1rem;
+                line-height: 1.6;
+            }
+
+            /* Audience grid — 1 col */
+            .audience-grid {
+                grid-template-columns: 1fr;
+                gap: 16px;
+                margin: 0 0 64px;
+                padding: 0;
+                width: 100%;
+                box-sizing: border-box;
+            }
+
+            .audience-card {
+                padding: 28px 24px;
+                border-radius: 16px;
+                text-align: center;
+                margin: 0;
+                width: 100%;
+                box-sizing: border-box;
+            }
+
+            .audience-card h3 {
+                font-size: 1.15rem;
+                margin-bottom: 10px;
+            }
+
+            .audience-card p {
+                font-size: 1rem;
+                line-height: 1.6;
+            }
+
+            /* Testimonials */
+            .testimonials-container {
+                margin: 0 0 64px;
+                width: 100%;
+                box-sizing: border-box;
+                padding: 0;
+            }
+
+            .testimonials-slider {
+                gap: 16px;
+                padding: 0;
+                display: flex;
+                overflow-x: auto;
+                scroll-snap-type: x mandatory;
+                scrollbar-width: none;
+            }
+
+            .testimonial-item {
+                flex: 0 0 100%;
+                padding: 40px 24px;
+                border-radius: 16px;
+                width: 100%;
+                box-sizing: border-box;
+                scroll-snap-align: center;
+            }
+            .testimonial-text {
+                font-size: 1.05rem;
+                line-height: 1.55;
+                margin-bottom: 20px;
+            }
+
+            .testimonials-footer {
+                flex-direction: column;
+                align-items: center;
+                gap: 18px;
+                margin-top: 20px;
+                padding: 0;
+                width: 100%;
+            }
+
+            .slider-nav {
+                justify-content: center;
+                margin-top: 0;
+            }
+
+            .more-reviews {
+                font-size: 0.9rem;
+            }
+
+            /* CTA Section */
+            .cta-section {
+                padding: 64px 24px;
+                border-radius: 28px;
+                margin: 0 0 64px;
+                text-align: center;
+                width: 100%;
+                box-sizing: border-box;
+            }
+
+            .cta-section h2 {
+                font-size: clamp(2rem, 8vw, 2.8rem);
+                margin-bottom: 16px;
+            }
+
+            .cta-section p {
+                font-size: 1rem;
+                margin-bottom: 32px;
+                padding: 0;
+            }
+
+            .cta-section .btn {
+                width: 100%;
+                max-width: 100%;
+                padding: 18px 24px;
+                font-size: 1rem;
+            }
+
+            /* Footer */
+            footer {
+                flex-direction: column;
+                gap: 12px;
+                text-align: center;
+                padding: 48px 0;
+                font-size: 0.9rem;
+                width: 100%;
+                box-sizing: border-box;
+            }
+
+            /* Hero */
+            .hero {
+                padding: 80px 0 48px;
+                text-align: center;
+            }
+
+            .badge {
+                font-size: 0.78rem;
+                padding: 5px 14px;
+                margin-bottom: 20px;
+            }
+
+            .hero h1 {
+                font-size: clamp(2.6rem, 11vw, 3.8rem);
+                margin-bottom: 20px;
+                line-height: 1.02;
+            }
+
+            .hero p {
+                font-size: 0.975rem;
+                line-height: 1.6;
+                padding: 0;
+                margin-bottom: 32px;
+            }
+
+            .hero-btns {
+                flex-direction: column;
+                align-items: center;
+                gap: 12px;
+                margin-top: 32px;
+                padding: 0;
+            }
+
+            .hero-btns .btn {
+                width: 100%;
+                max-width: 100%;
+                padding: 15px 24px;
+                font-size: 0.975rem;
+                border-radius: 14px;
+            }
+
+            /* Stats Grid — 1 column, centered */
+            .stats-grid {
+                grid-template-columns: 1fr;
+                margin: 0 0 64px;
+                border-radius: 20px;
+                width: 100%;
+            }
+
+            .stat-card {
+                padding: 36px 20px;
+                text-align: center;
+            }
+
+            .stat-value {
+                font-size: 2.8rem;
+            }
+
+            .stat-label {
+                font-size: 0.7rem;
+                letter-spacing: 0.12em;
+            }
+
+            /* Section headers */
+            .section-header {
+                margin-bottom: 32px;
+                text-align: center;
+                padding: 0;
+            }
+
+            .section-header h2 {
+                font-size: clamp(1.7rem, 7vw, 2.2rem);
+                margin-bottom: 12px;
+            }
+
+            .section-header p {
+                font-size: 0.925rem;
+                padding: 0;
+            }
+
+            /* Portfolio sliders */
+            .portfolio-container {
+                margin-bottom: 64px;
+                margin-left: -20px;
+                margin-right: -20px;
+                width: calc(100% + 40px);
+            }
+
+            .portfolio-slider {
+                gap: 14px;
+                padding: 24px 20px;
+            }
+
+            .portfolio-card {
+                flex: 0 0 78%;
+                transform: scale(0.92);
+                opacity: 0.55;
+                filter: brightness(0.55);
+                border-radius: 14px;
+            }
+
+            .portfolio-card.is-active {
+                transform: scale(1);
+                opacity: 1;
+                filter: brightness(1);
+            }
+
+            .portfolio-card.horizontal {
+                flex: 0 0 88%;
+                border-radius: 14px;
+            }
+
+            .portfolio-nav {
+                margin-top: 20px;
+                justify-content: center;
+                gap: 12px;
+                padding: 0 20px;
+            }
+
+            .nav-btn {
+                width: 44px;
+                height: 44px;
+            }
+
+            /* Features grid — 1 col */
+            .features-grid {
+                grid-template-columns: 1fr;
+                gap: 16px;
+                margin: 0 0 64px;
+                padding: 0;
+                width: 100%;
+            }
+
+            .feature-card {
+                padding: 28px 24px;
+                border-radius: 16px;
+                text-align: center;
+                margin: 0;
+                width: 100%;
+            }
+
+            .feature-card h3 {
+                font-size: 1.3rem;
+                margin-bottom: 12px;
+            }
+
+            .feature-card p {
+                font-size: 1rem;
+                line-height: 1.6;
+            }
+
+            /* Audience grid — 1 col */
+            .audience-grid {
+                grid-template-columns: 1fr;
+                gap: 16px;
+                margin: 0 0 64px;
+                padding: 0;
+                width: 100%;
+            }
+
+            .audience-card {
+                padding: 28px 24px;
+                border-radius: 16px;
+                text-align: center;
+                margin: 0;
+                width: 100%;
+            }
+            .audience-card h3 {
+                font-size: 1.15rem;
+                margin-bottom: 10px;
+            }
+
+            .audience-card p {
+                font-size: 1rem;
+                line-height: 1.6;
+            }
+
+            /* Testimonials */
+            .testimonials-container {
+                margin: 0 0 64px;
+                width: 100%;
+            }
+
+            .testimonials-slider {
+                gap: 16px;
+                padding-bottom: 8px;
+            }
+
+            .testimonial-item {
+                flex: 0 0 100%;
+                padding: 40px 24px;
+                border-radius: 16px;
+                width: 100%;
+            }
+
+            .testimonial-text {
+                font-size: 1.05rem;
+                line-height: 1.55;
+                margin-bottom: 20px;
+            }
+
+            .testimonials-footer {
+                flex-direction: column;
+                align-items: center;
+                gap: 18px;
+                margin-top: 20px;
+                padding: 0;
+            }
+
+            .slider-nav {
+                justify-content: center;
+                margin-top: 0;
+            }
+
+            .more-reviews {
+                font-size: 0.9rem;
+            }
+
+            /* CTA Section */
+            .cta-section {
+                padding: 64px 24px;
+                border-radius: 28px;
+                margin: 0 0 64px;
+                text-align: center;
+                width: 100%;
+            }
+
+            .cta-section h2 {
+                font-size: clamp(2rem, 8vw, 2.8rem);
+                margin-bottom: 16px;
+            }
+
+            .cta-section p {
+                font-size: 1rem;
+                margin-bottom: 32px;
+                padding: 0;
+            }
+
+            .cta-section .btn {
+                width: 100%;
+                max-width: 100%;
+                padding: 18px 24px;
+                font-size: 1rem;
+            }
+
+            /* Footer */
+            footer {
+                flex-direction: column;
+                gap: 12px;
+                text-align: center;
+                padding: 48px 0;
+                font-size: 0.9rem;
+                width: 100%;
+            }
+            /* Hero */
+            .hero {
+                padding: 80px 12px 48px;
+                text-align: center;
+            }
+
+            .badge {
+                font-size: 0.78rem;
+                padding: 5px 14px;
+                margin-bottom: 20px;
+            }
+
+            .hero h1 {
+                font-size: clamp(2.6rem, 11vw, 3.8rem);
+                margin-bottom: 20px;
+                line-height: 1.02;
+            }
+
+            .hero p {
+                font-size: 0.975rem;
+                line-height: 1.6;
+                padding: 0 8px;
+                margin-bottom: 32px;
+            }
+
+            .hero-btns {
+                flex-direction: column;
+                align-items: center;
+                gap: 12px;
+                margin-top: 32px;
+                padding: 0 8px;
+            }
+
+            .hero-btns .btn {
+                width: 100%;
+                max-width: 100%;
+                padding: 15px 24px;
+                font-size: 0.975rem;
+                border-radius: 14px;
+            }
+
+            /* Stats Grid — 1 column, centered */
+            .stats-grid {
+                grid-template-columns: 1fr;
+                margin: 0 8px 64px;
+                border-radius: 20px;
+            }
+
+            .stat-card {
+                padding: 36px 20px;
+                text-align: center;
+            }
+
+            .stat-value {
+                font-size: 2.8rem;
+            }
+
+            .stat-label {
+                font-size: 0.7rem;
+                letter-spacing: 0.12em;
+            }
+
+            /* Section headers */
+            .section-header {
+                margin-bottom: 32px;
+                text-align: center;
+                padding: 0 12px;
+            }
+
+            .section-header h2 {
+                font-size: clamp(1.7rem, 7vw, 2.2rem);
+                margin-bottom: 12px;
+            }
+
+            .section-header p {
+                font-size: 0.925rem;
+                padding: 0 8px;
+            }
+
+            /* Portfolio sliders */
+            .portfolio-container {
+                margin-bottom: 64px;
+            }
+
+            .portfolio-slider {
+                gap: 14px;
+                padding: 24px 16px;
+            }
+
+            .portfolio-card {
+                flex: 0 0 78%;
+                transform: scale(0.92);
+                opacity: 0.55;
+                filter: brightness(0.55);
+                border-radius: 14px;
+            }
+
+            .portfolio-card.is-active {
+                transform: scale(1);
+                opacity: 1;
+                filter: brightness(1);
+            }
+
+            .portfolio-card.horizontal {
+                flex: 0 0 88%;
+                border-radius: 14px;
+            }
+
+            .portfolio-nav {
+                margin-top: 20px;
+                justify-content: center;
+                gap: 12px;
+                padding: 0 16px;
+            }
+
+            .nav-btn {
+                width: 44px;
+                height: 44px;
+            }
+
+            /* Features grid — 1 col */
+            .features-grid {
+                grid-template-columns: 1fr;
+                gap: 16px;
+                margin: 0 0 64px;
+                padding: 0;
+            }
+
+            .feature-card {
+                padding: 28px 24px;
+                border-radius: 16px;
+                text-align: left;
+                margin: 0;
+            }
+
+            .feature-card h3 {
+                font-size: 1.3rem;
+                margin-bottom: 12px;
+            }
+
+            .feature-card p {
+                font-size: 1rem;
+                line-height: 1.6;
+            }
+
+            /* Audience grid — 1 col */
+            .audience-grid {
+                grid-template-columns: 1fr;
+                gap: 16px;
+                margin: 0 0 64px;
+                padding: 0;
+            }
+
+            .audience-card {
+                padding: 28px 24px;
+                border-radius: 16px;
+                text-align: left;
+                margin: 0;
+            }
+            .audience-card h3 {
+                font-size: 1.15rem;
+                margin-bottom: 10px;
+            }
+
+            .audience-card p {
+                font-size: 0.9rem;
+                line-height: 1.6;
+            }
+
+            /* Testimonials */
+            .testimonials-container {
+                margin: 0 8px 64px;
+            }
+
+            .testimonials-slider {
+                gap: 16px;
+                padding-bottom: 8px;
+            }
+
+            .testimonial-item {
+                flex: 0 0 100%;
+                padding: 40px 24px;
+                border-radius: 16px;
+            }
+
+            .testimonial-text {
+                font-size: 1.05rem;
+                line-height: 1.55;
+                margin-bottom: 20px;
+            }
+
+            .testimonials-footer {
+                flex-direction: column;
+                align-items: center;
+                gap: 18px;
+                margin-top: 20px;
+                padding: 0 16px;
+            }
+
+            .slider-nav {
+                justify-content: center;
+                margin-top: 0;
+            }
+
+            .more-reviews {
+                font-size: 0.9rem;
+            }
+
+            /* CTA Section */
+            .cta-section {
+                padding: 64px 24px;
+                border-radius: 28px;
+                margin: 0 8px 64px;
+                text-align: center;
+            }
+
+            .cta-section h2 {
+                font-size: clamp(2rem, 8vw, 2.8rem);
+                margin-bottom: 16px;
+            }
+
+            .cta-section p {
+                font-size: 0.95rem;
+                margin-bottom: 32px;
+                padding: 0 8px;
+            }
+
+            .cta-section .btn {
+                width: 100%;
+                max-width: 100%;
+                padding: 18px 24px;
+                font-size: 1rem;
+            }
+
+            /* Footer */
+            footer {
+                flex-direction: column;
+                gap: 12px;
+                text-align: center;
+                padding: 48px 16px;
+                font-size: 0.85rem;
+            }
+            .cta-section .btn {
+                width: 100%;
+                max-width: 300px;
+                padding: 16px 24px;
+                font-size: 1rem;
+            }
+
+            /* Footer */
+            footer {
+                flex-direction: column;
+                gap: 10px;
+                text-align: center;
+                padding: 36px 0;
+                font-size: 0.85rem;
+            }
+
+            /* Sections vertical spacing */
+            #portfolio,
+            #why-me,
+            #audience,
+            #testimonials {
+                margin-bottom: 0;
+            }
+
+            section {
+                margin-bottom: 0;
+            }
+
+            /* Ensure no horizontal overflow from any block */
+            .stats-grid,
+            .features-grid,
+            .audience-grid,
+            .testimonials-container,
+            .portfolio-container {
+                overflow: hidden;
+            }
+
+            .portfolio-container {
+                overflow: visible;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .hero h1 {
+                font-size: 2.4rem;
+            }
+
+            .portfolio-card {
+                flex: 0 0 86%;
+            }
+
+            .stat-value {
+                font-size: 2.4rem;
+            }
+
+            .testimonial-text {
+                font-size: 1rem;
+            }
+        }
+        
+    </style></head>
+<body>
+    <div class="glow-center"></div>
+    <div class="container">
+        <section class="hero">
+            <div class="badge">ОТКРЫТ К НОВЫМ ПРОЕКТАМ</div>
+            <h1>НИКИТА<br>REELS EDITOR</h1>
+            <p>Монтирую Reels и shorts видео, которые цепляют с первых секунд, удерживают внимание и усиливают личный бренд или продукт.</p>
+            <div class="hero-btns">
+                <a href="https://t.me/iisucceed" class="btn">Написать в Telegram</a>
+                <a href="#portfolio" class="btn btn-secondary">Смотреть работы</a>
+            </div>
+        </section>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <span class="stat-value">100М+</span>
+                <span class="stat-label">СУММАРНЫЕ ПРОСМОТРЫ</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-value">0</span>
+                <span class="stat-label">СОРВАННЫХ ДЕДЛАЙНОВ</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-value">10+</span>
+                <span class="stat-label">МЕСЯЦЕВ В МОНТАЖЕ</span>
+            </div>
+        </div>
+
+        <section id="portfolio">
+            <div class="section-header">
+                <h2>ИЗБРАННЫЕ РАБОТЫ</h2>
+                <p>Примеры монтажа для Reels, shorts контента и креативных видео.</p>
+            </div>
+            <div class="portfolio-container">
+                <div class="portfolio-slider" id="portfolioSlider">
+                    <div class="portfolio-card is-active">
+                        <video src="https://mvqbxiyydxrljunywpde.supabase.co/storage/v1/object/public/videos/11.mp4" preload="metadata"></video>
+                        <div class="play-button" onclick="toggleVideo(this)">
+                            <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                        </div>
+                    </div>
+                    <div class="portfolio-card is-active">
+                        <video src="https://mvqbxiyydxrljunywpde.supabase.co/storage/v1/object/public/videos/22.mp4" preload="metadata"></video>
+                        <div class="play-button" onclick="toggleVideo(this)">
+                            <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                        </div>
+                    </div>
+                    <div class="portfolio-card is-active">
+                        <video src="https://mvqbxiyydxrljunywpde.supabase.co/storage/v1/object/public/videos/44.mp4" preload="metadata"></video>
+                        <div class="play-button" onclick="toggleVideo(this)">
+                            <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                        </div>
+                    </div>
+                    <div class="portfolio-card">
+                        <video src="https://mvqbxiyydxrljunywpde.supabase.co/storage/v1/object/public/videos/55.mp4" preload="metadata"></video>
+                        <div class="play-button" onclick="toggleVideo(this)">
+                            <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                        </div>
+                    </div>
+                </div>
+                <div class="portfolio-nav">
+                    <button class="nav-btn" onclick="document.getElementById('portfolioSlider').scrollBy({left: -400, behavior: 'smooth'})">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                    </button>
+                    <button class="nav-btn" onclick="document.getElementById('portfolioSlider').scrollBy({left: 400, behavior: 'smooth'})">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                    </button>
+                </div>
+            </div>
+
+            <div class="section-header" style="margin-top: 80px;">
+                <h2>ГОРИЗОНТАЛЬНЫЕ ВИДЕО</h2>
+                <p>Примеры монтажа для YouTube и рекламных роликов.</p>
+            </div>
+            <div class="portfolio-container">
+                <div class="portfolio-slider" id="horizontalSlider">
+                    <div class="portfolio-card horizontal is-active">
+                        <video src="https://mvqbxiyydxrljunywpde.supabase.co/storage/v1/object/public/videos/1.mp4" preload="metadata"></video>
+                        <div class="play-button" onclick="toggleVideo(this)">
+                            <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                        </div>
+                    </div>
+                    <div class="portfolio-card horizontal is-active">
+                        <video src="https://mvqbxiyydxrljunywpde.supabase.co/storage/v1/object/public/videos/2.mp4" preload="metadata"></video>
+                        <div class="play-button" onclick="toggleVideo(this)">
+                            <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                        </div>
+                    </div>
+                    <div class="portfolio-card horizontal">
+                        <video src="https://mvqbxiyydxrljunywpde.supabase.co/storage/v1/object/public/videos/4.mp4" preload="metadata"></video>
+                        <div class="play-button" onclick="toggleVideo(this)">
+                            <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                        </div>
+                    
+                </div>
+                <div class="portfolio-nav">
+                    <button class="nav-btn" onclick="document.getElementById('horizontalSlider').scrollBy({left: -600, behavior: 'smooth'})">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                    </button>
+                    <button class="nav-btn" onclick="document.getElementById('horizontalSlider').scrollBy({left: 600, behavior: 'smooth'})">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <script>
+            function toggleVideo(btn) {
+                const card = btn.closest('.portfolio-card');
+                const video = card.querySelector('video');
+                
+                if (video.paused) {
+                    // Останавливаем другие видео (опционально)
+                    document.querySelectorAll('video').forEach(v => {
+                        if (v !== video) {
+                            v.pause();
+                            v.closest('.portfolio-card').classList.remove('playing');
+                        }
+                    });
+                    
+                    video.play();
+                    card.classList.add('playing');
+                    video.setAttribute('controls', 'true'); // Показываем стандартные контролы после запуска
+                } else {
+                    video.pause();
+                    card.classList.remove('playing');
+                }
+            }
+            const updateActiveCards = (sliderElement) => {
+                const cards = sliderElement.querySelectorAll('.portfolio-card');
+                const sliderRect = sliderElement.getBoundingClientRect();
+                const sliderCenter = sliderRect.left + sliderRect.width / 2;
+
+                cards.forEach(card => {
+                    const cardRect = card.getBoundingClientRect();
+                    const cardCenter = cardRect.left + cardRect.width / 2;
+                    const distanceFromCenter = Math.abs(sliderCenter - cardCenter);
+
+                    // Увеличиваем порог для горизонтальных видео или используем более гибкое условие
+                    const threshold = card.classList.contains('horizontal') ? sliderRect.width / 3 : sliderRect.width / 2.5;
+
+                    if (distanceFromCenter < threshold) {
+                        card.classList.add('is-active');
+                    } else {
+                        card.classList.remove('is-active');
+                    }
+                });
+            };
+
+            const portfolioSlider = document.getElementById('portfolioSlider');
+            const horizontalSlider = document.getElementById('horizontalSlider');
+
+            portfolioSlider.addEventListener('scroll', () => updateActiveCards(portfolioSlider));
+            horizontalSlider.addEventListener('scroll', () => updateActiveCards(horizontalSlider));
+            window.addEventListener('resize', () => {
+                updateActiveCards(portfolioSlider);
+                updateActiveCards(horizontalSlider);
+            });
+            
+            // Initial call
+            setTimeout(() => {
+                updateActiveCards(portfolioSlider);
+                updateActiveCards(horizontalSlider);
+            }, 100);
+        </script>
+        <section id="why-me">
+            <div class="section-header">
+                <h2>ПОЧЕМУ СО МНОЙ РАБОТАЮТ</h2>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <h3>Надёжность в сроках</h3>
+                    <p>Работаю чётко по срокам и не пропадаю в процессе. Для меня монтаж — это не хаос, а дисциплина и ответственность перед клиентом.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Сильная техническая база</h3>
+                    <p>Работаю в Premiere Pro и After Effects, при необходимости усиливаю ролики современными AI-инструментами для визуала и звука.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Монтаж под результат</h3>
+                    <p>Смотрю не только на картинку, но и на удержание внимания, подачу смысла и итоговое впечатление от ролика.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Не только Reels</h3>
+                    <p>Основной фокус — Reels и shorts, но также беру подкасты, YouTube-форматы и видео, которым нужен сильный монтаж и темп.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="audience">
+            <div class="section-header">
+                <h2>КОМУ ПОДОЙДЁТ МОЯ РАБОТА</h2>
+            </div>
+            <div class="audience-grid">
+                <div class="audience-card">
+                    <h3>Эксперты</h3>
+                    <p>Которым нужен сильный контент для личного бренда, охватов и более дорогой подачи себя в кадре.</p>
+                </div>
+                <div class="audience-card">
+                    <h3>Продакшны</h3>
+                    <p>Которым нужен монтажёр, способный стабильно держать качество, сроки и рабочий темп на дистанции.</p>
+                </div>
+                <div class="audience-card">
+                    <h3>Бренды и бизнес</h3>
+                    <p>Которым нужны видео, усиливающие продукт, привлекающие внимание и помогающие выделяться на фоне конкурентов.</p>
+                </div>
+            </div>
+        </section>
+
+        
+        <section class="cta-section" id="contacts">
+            <h2>ОБСУДИМ ПРОЕКТ?</h2>
+            <p>Если вам нужен монтаж, который выглядит сильно и работает на результат — напишите в Telegram.</p>
+            <a href="https://t.me/iisucceed" class="btn">Написать в Telegram</a>
+        </section>
+
+        <footer>
+            <div>© 2026 Nikita Reels Editor</div>
+            <div>Reels / Shorts / YouTube / Podcasts</div>
+        </footer>
+    </div>
+</body>
+</html>
